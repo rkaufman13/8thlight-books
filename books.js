@@ -1,31 +1,79 @@
 const prompt = require("prompt-sync")({ sigint: true });
 const axios = require("axios");
+const fs = require("fs");
 
 let readingList = [];
+if (fs.existsSync("list.txt")) {
+  readingList = fs.readFileSync("list.txt").toString().split(/\n/);
+}
+
 let books = [];
 
-const showReadingList = (ask) => {
-  if (ask == "ask") {
-    console.log("Your reading list...");
-  }
+const showReadingList = () => {
   if (!readingList.length) {
-    console.log("Your reading list is empty!");
+    console.log(
+      "Your reading list is empty! Try searching for some books to add!"
+    );
   }
+  console.log("===================\n");
   readingList.forEach((book, i) => console.log(`${i + 1}: ${book}`));
-  console.log("===================");
-  console.log("Add another book to your list, or try a new search.");
+  console.log("===================\n");
+
   return;
 };
 
-const getUserChoice = () => {
-  const query = prompt("");
-  if (query == "LIST") {
-    showReadingList("ask");
-  } else if (query == "") {
-    console.log("I didn't quite get that. Care to try again?");
-    return;
+const showHelp = () => {
+  console.log(
+    "This program allows you to search for books by keyword, add them to a local reading list, and save that list.\n Here are some things you can try:\n 'L' to see your list. \n 'S' to save your list. \n 'Q' to quit the program. Anything else you type will be treated as a search query and will hopefully return a book you'd like to read!"
+  );
+};
+
+const saveReadingList = () => {
+  fs.writeFileSync("list.txt", readingList.join("\n"), "utf8");
+  console.log("Your list has been saved.");
+  console.log("===================\n");
+};
+
+const deleteReadingList = () => {
+  console.log(
+    "This action will PERMANENTLY clear your reading list! Are you sure?"
+  );
+  const confirm = prompt("Type 'YES' to confirm deletion of your list:");
+  if (confirm == "YES") {
+    try {
+      fs.unlinkSync("list.txt");
+      readingList = [];
+      console.log("Your list has been successfully cleared.");
+    } catch (err) {
+      console.error(err);
+    }
   } else {
-    return query;
+    return;
+  }
+};
+
+const getUserChoice = () => {
+  const query = prompt("Query or command:     ");
+  switch (query) {
+    case "L":
+      showReadingList();
+      break;
+    case "H":
+      showHelp();
+      break;
+    case "Q":
+      process.exit();
+    case "":
+      console.log("I didn't quite get that. Care to try again?");
+      break;
+    case "S":
+      saveReadingList();
+      break;
+    case "C":
+      deleteReadingList();
+      break;
+    default:
+      return query;
   }
 };
 
@@ -33,7 +81,11 @@ const addToList = (query, bookList) => {
   book = formatBooks(bookList.filter((book) => book.key == query));
   readingList.push(book[0].slice(3)); //bit of a bodge to get the number of the book out of the otherwise perfectly formatted string--but we know that with only 5 results this number will never change so I feel OK doing so
   console.log("Added to reading list. Your list is now:");
+  console.log("===================\n");
   showReadingList();
+  console.log(
+    "Add another book to your list from the results above, or try a new search."
+  );
 };
 
 const searchBooks = async (query) => {
@@ -82,11 +134,11 @@ const main = async () => {
       console.log("Your results:");
       bookList.forEach((book) => console.log(book));
       console.log(
-        "Add a book to your reading list by typing the number, view your list, or try a new search:"
+        "\nAdd a book to your reading list by typing its number (1-5). View your (L)ist, or try a new search:\n"
       );
     } else {
       console.log(
-        "Welcome to your reading list! Start by typing a query, or view your reading list by typing LIST."
+        "Welcome to your reading list!\nYou can:\nSearch for a book (type any query)\nView your list (type L)\n(S)ave your list\n(C)lear your list\n(H)elp\n(Q)uit"
       );
     }
 
@@ -97,9 +149,6 @@ const main = async () => {
 main();
 
 //TODOS:
-//more instructions on how to access list
 //don't search for an empty string
-//maybe negative numbers shouldn't be treated as queries
+
 //if it's offline, do something
-//more newlines
-//add HELP, QUIT, SAVE, LOAD
