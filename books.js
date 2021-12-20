@@ -90,12 +90,26 @@ const addToList = (query, bookList) => {
 
 const searchBooks = async (query) => {
   console.log(`Searching for ${query}...`);
-  return axios
-    .get(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5`)
-    .then((response) => response.data)
-    .catch((error) => {
-      console.log(error);
-    });
+  if (query.trim().length > 0) {
+    return axios
+      .get(
+        `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5`
+      )
+      .then((response) => response.data)
+      .catch((error) => {
+        if (error.code === "ENOTFOUND") {
+          console.log(
+            "You don't seem to have an internet connection! Try checking your connection and try again."
+          );
+        } else {
+          console.log(error);
+        }
+      });
+  } else {
+    console.log("Sorry, I didn't catch that.");
+    query = null;
+    return query;
+  }
 };
 
 const processBookData = (data) => {
@@ -129,13 +143,15 @@ const main = async () => {
       addToList(query, books);
     } else if (query) {
       const rawBookData = await searchBooks(query);
-      books = processBookData(rawBookData); //this is just the data we need from the api response
-      const bookList = formatBooks(books); //this is the pretty version to show to users
-      console.log("Your results:");
-      bookList.forEach((book) => console.log(book));
-      console.log(
-        "\nAdd a book to your reading list by typing its number (1-5). View your (L)ist, or try a new search:\n"
-      );
+      if (rawBookData) {
+        books = processBookData(rawBookData); //this is just the data we need from the api response
+        const bookList = formatBooks(books); //this is the pretty version to show to users
+        console.log("Your results:");
+        bookList.forEach((book) => console.log(book));
+        console.log(
+          "\nAdd a book to your reading list by typing its number (1-5). View your (L)ist, or try a new search:\n"
+        );
+      }
     } else {
       console.log(
         "Welcome to your reading list!\nYou can:\nSearch for a book (type any query)\nView your list (type L)\n(S)ave your list\n(C)lear your list\n(H)elp\n(Q)uit"
@@ -147,8 +163,3 @@ const main = async () => {
 };
 
 main();
-
-//TODOS:
-//don't search for an empty string
-
-//if it's offline, do something
