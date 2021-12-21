@@ -9,11 +9,11 @@ const {
   searchBooks,
   processBookData,
   formatBooks,
-} = require("../search-process-format.js");
+} = require("../src/search-process-format.js");
 
-const addToList = require("../add");
+const addToList = require("../src/add");
 
-const fsactions = require("../fs-actions");
+const fsactions = require("../src/fs-actions");
 
 const booksArray = require("./test-object.js");
 

@@ -1,12 +1,13 @@
 {
   "name": "google-books-search",
-  "main": "books.js",
+  "main": "main.js",
   "dependencies": {
     "axios": "^0.24.0",
     "prompt-sync": "^4.2.0"
   },
   "scripts": {
-    "test": "nyc --reporter=text node_modules/.bin/mocha"
+    "test": "nyc --reporter=text node_modules/.bin/mocha",
+    "start": "node main.js"
   },
   "devDependencies": {
     "chai": "^4.3.4",
