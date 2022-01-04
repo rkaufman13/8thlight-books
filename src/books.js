@@ -53,12 +53,17 @@ const main = async () => {
       const rawBookData = await searchBooks(query);
       if (rawBookData) {
         books = processBookData(rawBookData); //this is just the data we need from the api response
-        const bookList = formatBooks(books); //this is the pretty version to show to users
-        console.log("Your results:");
-        bookList.forEach((book) => console.log(book));
-        console.log(
-          "\nAdd a book to your reading list by typing its number (1-5). View your (L)ist, or try a new search:\n"
-        );
+        if (books) {
+          const bookList = formatBooks(books); //this is the pretty version to show to users
+          console.log("Your results:");
+          bookList.forEach((book) => console.log(book));
+
+          console.log(
+            "\nAdd a book to your reading list by typing its number (1-5). View your (L)ist, or try a new search:\n"
+          );
+        } else {
+          console.log("Sorry, no results found.");
+        }
       }
     } else {
       console.log(
