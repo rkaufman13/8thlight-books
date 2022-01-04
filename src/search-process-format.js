@@ -1,8 +1,17 @@
 const axios = require("axios");
 
+const removeEmoji = (query) => {
+  var replacementRegex = new RegExp(
+    /�/g
+  ); /*on my Mac terminal, all emoji are rendered as the Unicode "replacement" character, so this should catch all emoji and remove them. If there are emoji actually rendering (on some fancy Windows machine maybe?) there's an npm package we could use, but in my tests this didn't seem to do anything. Leaving link here for future reference if this changes as Terminal gets fancier. https://github.com/mathiasbynens/emoji-regex */
+  query = query.replace(replacementRegex, "");
+  return query;
+};
+
 const searchBooks = async (query) => {
-  console.log(`Searching for ${query}...`);
+  query = removeEmoji(query);
   if (query.trim().length > 0) {
+    console.log(`Searching for ${query}...`);
     return axios
       .get(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5`
@@ -25,8 +34,8 @@ const searchBooks = async (query) => {
 };
 
 const processBookData = (data) => {
-  let books = data["items"];
-  if (books.length) {
+  let books = data?.items;
+  if (books) {
     books = books.map((book, i) => {
       return {
         title: book.volumeInfo.title,
@@ -37,8 +46,7 @@ const processBookData = (data) => {
     });
     return books;
   } else {
-    console.log("Sorry, no results found.");
-    return;
+    return false;
   }
 };
 
