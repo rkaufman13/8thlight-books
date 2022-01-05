@@ -57,11 +57,9 @@ describe("Some sad paths", () => {
   });
   it("fails gracefully if somehow there is no data returned", () => {
     let spy = sinon.spy(console, "log");
-
     processBookData({
       kind: "books#volumes",
-      totalItems: 3340,
-      items: [],
+      totalItems: 0,
     });
     assert(spy.calledWith("Sorry, no results found."));
     spy.restore();

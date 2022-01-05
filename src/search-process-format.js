@@ -34,18 +34,21 @@ const searchBooks = async (query) => {
 };
 
 const processBookData = (data) => {
-  let books = data?.items;
-  if (books) {
-    books = books.map((book, i) => {
-      return {
-        title: book.volumeInfo.title,
-        authors: book.volumeInfo.authors?.join(", ") || "no author", //in case we have more than one author
-        publisher: book.volumeInfo.publisher || "no publisher",
-        key: i + 1,
-      };
-    });
-    return books;
+  if (data.totalItems > 0) {
+    let books = data?.items;
+    if (books) {
+      books = books.map((book, i) => {
+        return {
+          title: book.volumeInfo.title,
+          authors: book.volumeInfo.authors?.join(", ") || "no author", //in case we have more than one author, or none
+          publisher: book.volumeInfo.publisher || "no publisher",
+          key: i + 1,
+        };
+      });
+      return books;
+    }
   } else {
+    console.log("Sorry, no results found.");
     return false;
   }
 };

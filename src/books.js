@@ -30,15 +30,14 @@ const getUserChoice = () => {
       break;
     case "Q":
       process.exit();
-    case "":
-      console.log("I didn't quite get that. Care to try again?");
-      break;
     case "S":
       saveReadingList(readingList);
       break;
     case "C":
       readingList = deleteReadingList(readingList);
       break;
+    case "":
+      return " ";
     default:
       return query;
   }
@@ -62,7 +61,6 @@ const main = async () => {
             "\nAdd a book to your reading list by typing its number (1-5). View your (L)ist, or try a new search:\n"
           );
         } else {
-          console.log("Sorry, no results found.");
         }
       }
     } else {
